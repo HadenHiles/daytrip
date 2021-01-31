@@ -13,8 +13,6 @@ class _ProfileState extends State<Profile> {
   // Static variables
   final user = FirebaseAuth.instance.currentUser;
 
-  int _sessionCount = 0;
-
   @override
   Widget build(BuildContext context) {
     return Container(

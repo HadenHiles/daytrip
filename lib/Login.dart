@@ -76,7 +76,7 @@ class _LoginState extends State<Login> {
                     ),
                     Divider(
                       color: Colors.transparent,
-                      height: 150,
+                      height: 75,
                     ),
                     SizedBox(
                       height: 60,
