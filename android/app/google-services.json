@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "308333059094",
+    "project_id": "daytrip-tadah",
+    "storage_bucket": "daytrip-tadah.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308333059094:android:788a126bdef2158f17a937",
+        "android_client_info": {
+          "package_name": "com.example.daytrip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308333059094-rdgoq7cr1fte9qqh3ml73rrkb6m04a8c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.daytrip",
+            "certificate_hash": "ca744b65db55aeec41cf2fe3abe26ca3037391cb"
+          }
+        },
+        {
+          "client_id": "308333059094-kttg1offujnat0968dhn5fv07dtuditg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-SsQDHW23pFOZw88ysHlM7AoRuU48miM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "308333059094-kttg1offujnat0968dhn5fv07dtuditg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
