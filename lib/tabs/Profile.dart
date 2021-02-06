@@ -13,8 +13,6 @@ class _ProfileState extends State<Profile> {
   // Static variables
   final user = FirebaseAuth.instance.currentUser;
 
-  int _sessionCount = 0;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,7 +41,9 @@ class _ProfileState extends State<Profile> {
                 children: [
                   Container(
                     child: Text(
-                      user.displayName != null && user.displayName.isNotEmpty ? user.displayName : user.email,
+                      user.displayName != null && user.displayName.isNotEmpty
+                          ? user.displayName
+                          : user.email,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
