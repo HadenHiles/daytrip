@@ -41,7 +41,9 @@ class _ProfileState extends State<Profile> {
                 children: [
                   Container(
                     child: Text(
-                      user.displayName != null && user.displayName.isNotEmpty ? user.displayName : user.email,
+                      user.displayName != null && user.displayName.isNotEmpty
+                          ? user.displayName
+                          : user.email,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
