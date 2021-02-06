@@ -144,7 +144,7 @@ class _LoginState extends State<Login> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             FractionalTranslation(
-                              translation: Offset(-0.2, 0.0),
+                              translation: Offset(0.0, 0.0),
                               child: Align(
                                 child: SizedBox(
                                   height: 100,
@@ -152,7 +152,12 @@ class _LoginState extends State<Login> {
                                     children: [
                                       Container(
                                         margin: EdgeInsets.only(left: 5),
-                                        child: Text('Sign in with Email'),
+                                        child: Text(
+                                          'Sign in with Email',
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.onPrimary,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
