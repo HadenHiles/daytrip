@@ -54,7 +54,7 @@ class DayTrip extends StatelessWidget {
         settings = settingsState.settings;
 
         return MaterialApp(
-          title: 'Skill Drills',
+          title: 'Day Trip',
           navigatorKey: navigatorKey,
           theme: DayTripTheme.lightTheme,
           darkTheme: DayTripTheme.darkTheme,
