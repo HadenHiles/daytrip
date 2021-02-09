@@ -2,6 +2,7 @@ import 'package:daytrip/main.dart';
 import 'package:daytrip/tabs/Profile.dart';
 import 'package:daytrip/tabs/Trips.dart';
 import 'package:daytrip/tabs/profile/settings/Settings.dart';
+import 'package:daytrip/tabs/trips/Trip.dart';
 import 'package:daytrip/widgets/BasicTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,22 @@ class _NavigationState extends State<Navigation> {
     ),
     NavigationTab(
       title: BasicTitle(title: "Trips"),
-      actions: [],
+      actions: [
+        Container(
+          margin: EdgeInsets.only(top: 10),
+          child: IconButton(
+            icon: Icon(
+              Icons.add,
+              size: 28,
+            ),
+            onPressed: () {
+              navigatorKey.currentState.push(MaterialPageRoute(builder: (BuildContext context) {
+                return Trip();
+              }));
+            },
+          ),
+        ),
+      ],
       body: Trips(),
     ),
   ];
