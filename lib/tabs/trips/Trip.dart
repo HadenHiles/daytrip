@@ -85,6 +85,36 @@ class _TripState extends State<Trip> {
                 return null;
               },
             ),
+            // Address TextField
+            // I'm not sure how else we are storing the location, geolocation would be cool
+            // but will we complete that near the end, and just store it as an address for now? -TL
+            TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Please enter an address',
+                ),
+                validator: (value) {
+                if (value.isEmpty) {
+                  return 'Valid address is needed';
+                }
+                return null;
+              },
+            ),
+            // Creating a TextFormField that uses the number keyboard for ease of access.
+            TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'How long is the trip? (in minutes)',
+                ),
+                keyboardType: TextInputType.number,
+                validator: (String value) {
+
+                  int minutes = int.tryParse(value);
+
+                if (minutes == null || minutes <=0) {
+                  return 'Correct duration is needed';
+                }
+                return null;
+              },
+            ),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: Colors.green[700],
