@@ -12,7 +12,8 @@ class Trip extends StatefulWidget {
 class _TripState extends State<Trip> {
 
   final _formKey = GlobalKey<FormState>();
-  double _kilometreValue = 20;
+  final TextEditingController kilometersTextController = TextEditingController();
+  double _kilometerValue = 1;
   
   @override
   Widget build(BuildContext context) {
@@ -115,6 +116,31 @@ class _TripState extends State<Trip> {
                 return null;
               },
             ),
+            // Creating a TextFormField that uses the number keyboard for ease of access.
+            TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'How far is the trip? (in kilometers)',
+                ),
+                controller: kilometersTextController,
+                keyboardType: TextInputType.number,
+                validator: (String value) {
+
+                  double kilometers = double.tryParse(value);
+
+                if (kilometers == null) {
+                  return 'Correct trip length is needed';
+                }
+                return null;
+              },
+              onChanged: (String value) {
+                double kilometers = double.tryParse(value);
+                setState(() {
+                  if (kilometers != null){
+                  _kilometerValue = kilometers;
+                  }               
+                });
+              },
+            ),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: Colors.green[700],
@@ -129,13 +155,14 @@ class _TripState extends State<Trip> {
               child: Slider(
                 min: 0,
                 max: 100,
-                divisions: 5,
-                label: '$_kilometreValue',
-                value: _kilometreValue,
+                divisions: 100,
+                label: '$_kilometerValue',
+                value: _kilometerValue,
                 onChanged: (value){
                   setState(() {
-                    _kilometreValue = value;       
+                    _kilometerValue = value;       
                   });
+                  kilometersTextController.text = _kilometerValue.toString();
                 },
               ),
             ),
