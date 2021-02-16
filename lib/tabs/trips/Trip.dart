@@ -13,7 +13,9 @@ class _TripState extends State<Trip> {
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController kilometersTextController = TextEditingController();
+  final TextEditingController durationTextController = TextEditingController();
   double _kilometerValue = 1;
+  double _durationValue = 1;
   
   @override
   Widget build(BuildContext context) {
@@ -103,18 +105,52 @@ class _TripState extends State<Trip> {
             // Creating a TextFormField that uses the number keyboard for ease of access.
             TextFormField(
                 decoration: const InputDecoration(
-                  hintText: 'How long is the trip? (in minutes)',
+                  hintText: 'How long is the trip? (in minutes?)',
                 ),
+                controller: durationTextController,
                 keyboardType: TextInputType.number,
                 validator: (String value) {
 
-                  int minutes = int.tryParse(value);
+                  double minutes = double.tryParse(value);
 
-                if (minutes == null || minutes <=0) {
-                  return 'Correct duration is needed';
+                if (minutes == null) {
+                  return 'Correct trip duration is needed';
                 }
                 return null;
               },
+              onChanged: (String value) {
+                double minutes = double.tryParse(value);
+                setState(() {
+                  if (minutes != null){
+                  _durationValue = minutes;
+                  }               
+                });
+              },
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: Colors.green[700],
+                inactiveTrackColor: Colors.transparent,
+                trackShape: RectangularSliderTrackShape(),
+                trackHeight: 4.0,
+                thumbColor: Colors.lightGreenAccent,
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                overlayColor: Colors.lightGreen.withAlpha(32),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+            ),
+              child: Slider(
+                min: 0,
+                max: 100,
+                divisions: 100,
+                label: '$_durationValue',
+                value: _durationValue,
+                onChanged: (value){
+                  setState(() {
+                    _durationValue = value;       
+                  });
+                  durationTextController.text = _durationValue.toString();
+                },
+              ),
             ),
             // Creating a TextFormField that uses the number keyboard for ease of access.
             TextFormField(
