@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:daytrip/main.dart';
 import 'package:daytrip/widgets/BasicTitle.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Trip extends StatefulWidget {
   Trip({Key key}) : super(key: key);
@@ -14,15 +16,29 @@ class _TripState extends State<Trip> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController kilometersTextController = TextEditingController();
   final TextEditingController durationTextController = TextEditingController();
+  File _image;
+  final picker = ImagePicker();
   double _kilometerValue = 1;
   double _durationValue = 1;
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
               collapsedHeight: 65,
@@ -64,6 +80,10 @@ class _TripState extends State<Trip> {
         body: Container(
           child: Column(
             children: <Widget>[
+              _image == null
+              ? Text('No image selected')
+              : Image.file(_image),
+              
               // Trip Title TextField
               TextFormField(
                 decoration: const InputDecoration(
@@ -75,7 +95,7 @@ class _TripState extends State<Trip> {
                 }
                 return null;
               },
-            ), 
+            ),
             // Description TextField
             TextFormField(
                 decoration: const InputDecoration(
@@ -201,6 +221,12 @@ class _TripState extends State<Trip> {
                   kilometersTextController.text = _kilometerValue.toString();
                 },
               ),
+            ),
+            // Image picker button to choose images (NOT WORKING YET)
+            FloatingActionButton(
+            onPressed: getImage,
+            tooltip: 'Pick trip images here!',
+            child: Icon(Icons.add_a_photo),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
