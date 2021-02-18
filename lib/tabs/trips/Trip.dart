@@ -22,7 +22,7 @@ class _TripState extends State<Trip> {
   double _durationValue = 1;
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
