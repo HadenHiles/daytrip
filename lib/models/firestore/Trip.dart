@@ -5,7 +5,7 @@ class Trip {
   final String title;
   final DateTime date;
   final String description;
-  final String tripDuration;
+  final int tripDuration;
   final int tripDistance;
   DocumentReference reference;
 

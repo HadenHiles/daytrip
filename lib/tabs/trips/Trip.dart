@@ -1,23 +1,34 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daytrip/main.dart';
 import 'package:daytrip/widgets/BasicTitle.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:daytrip/models/firestore/Trip.dart';
 
-class Trip extends StatefulWidget {
-  Trip({Key key}) : super(key: key);
+class AddTrip extends StatefulWidget {
+  AddTrip({Key key}) : super(key: key);
 
   @override
-  _TripState createState() => _TripState();
+  _AddTripState createState() => _AddTripState();
 }
 
-class _TripState extends State<Trip> {
+class _AddTripState extends State<AddTrip> {
+
+  final user = FirebaseAuth.instance.currentUser;
 
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController titleTextFieldController = TextEditingController();
+  final TextEditingController descriptionTextFieldController = TextEditingController();
   final TextEditingController kilometersTextController = TextEditingController();
   final TextEditingController durationTextController = TextEditingController();
+  
+  // Used for image picker
   File _image;
   final picker = ImagePicker();
+  
+  // Default values for kilometer and duration
   double _kilometerValue = 1;
   double _durationValue = 1;
 
@@ -78,17 +89,20 @@ class _TripState extends State<Trip> {
           ];
         },
         body: Container(
-          child: Column(
-            children: <Widget>[
-              _image == null
-              ? Text('No image selected')
-              : Image.file(_image),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                _image == null
+                ? Text('No image selected')
+                : Image.file(_image),
               
-              // Trip Title TextField
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Enter a trip title',
+                // Trip Title TextField
+                TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: 'Enter a trip title',
                 ),
+                controller: titleTextFieldController,
                 validator: (value) {
                 if (value.isEmpty) {
                   return 'Please enter a trip title';
@@ -101,6 +115,7 @@ class _TripState extends State<Trip> {
                 decoration: const InputDecoration(
                   hintText: 'Enter a trip description',
                 ),
+                controller: descriptionTextFieldController,
                 validator: (value) {
                 if (value.isEmpty) {
                   return 'Please enter trip description';
@@ -236,12 +251,28 @@ class _TripState extends State<Trip> {
                   // the form is invalid.
                   if (_formKey.currentState.validate()) {
                     // Process data.
-                  }
-                },
-                child: Text('Save Trip'),
+                    // Create trip object
+                    Trip trip = Trip(
+                      titleTextFieldController.text.toString(), 
+                      DateTime.now(), 
+                      descriptionTextFieldController.text.toString(),
+                      Duration(hours: 3).inSeconds,
+                      double.tryParse(kilometersTextController.text).toInt()
+                    );
+
+                    FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').add(trip.toMap()).then((value) {
+                      navigatorKey.currentState.pop();
+                    }).catchError((error){
+                      new SnackBar(content: new Text('Trip not added successfully!'));
+                    });
+                    }
+                      FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').snapshots();
+                  },
+                    child: Text('Save Trip'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
