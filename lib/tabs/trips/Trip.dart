@@ -29,8 +29,8 @@ class _AddTripState extends State<AddTrip> {
   final picker = ImagePicker();
   
   // Default values for kilometer and duration
-  double _kilometerValue = 1;
-  double _durationValue = 1;
+  double _kilometerValue = 1.0;
+  double _durationValue = 1.0;
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -173,7 +173,7 @@ class _AddTripState extends State<AddTrip> {
                 overlayColor: Colors.lightGreen.withAlpha(32),
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
             ),
-              child: Slider(
+              child: Slider.adaptive(
                 min: 0,
                 max: 100,
                 divisions: 100,
@@ -181,7 +181,7 @@ class _AddTripState extends State<AddTrip> {
                 value: _durationValue,
                 onChanged: (value){
                   setState(() {
-                    _durationValue = value;       
+                    _durationValue = value.roundToDouble(); 
                   });
                   durationTextController.text = _durationValue.toString();
                 },
@@ -231,13 +231,13 @@ class _AddTripState extends State<AddTrip> {
                 value: _kilometerValue,
                 onChanged: (value){
                   setState(() {
-                    _kilometerValue = value;       
+                    _kilometerValue = value.roundToDouble();       
                   });
                   kilometersTextController.text = _kilometerValue.toString();
                 },
               ),
             ),
-            // Image picker button to choose images (NOT WORKING YET)
+            // Image picker button to choose images
             FloatingActionButton(
             onPressed: getImage,
             tooltip: 'Pick trip images here!',
