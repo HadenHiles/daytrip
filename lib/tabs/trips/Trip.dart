@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:daytrip/models/firestore/Trip.dart';
+import 'package:flutter/cupertino.dart';
 
 class AddTrip extends StatefulWidget {
   AddTrip({Key key}) : super(key: key);
@@ -23,14 +24,66 @@ class _AddTripState extends State<AddTrip> {
   final TextEditingController descriptionTextFieldController = TextEditingController();
   final TextEditingController kilometersTextController = TextEditingController();
   final TextEditingController durationTextController = TextEditingController();
-  
+
+
   // Used for image picker
   File _image;
   final picker = ImagePicker();
+  Widget button(String text, {Function onPressed, Color color}) {
+    return Container(
+      width: 200,
+      height: 50,
+      margin: EdgeInsets.symmetric(vertical: 5),
+      color: color ?? Colors.redAccent,
+      child: MaterialButton(
+          child: Text(
+            '$text',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: onPressed),
+    );
+  }
   
+  //Used for the Cupterino Timer Picker
+    Duration initialtimer = new Duration();
+    Future<void> bottomSheet(BuildContext context, Widget child,
+      {double height}) {
+    return showModalBottomSheet(
+        isScrollControlled: false,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(13), topRight: Radius.circular(13))),
+        backgroundColor: Colors.white,
+        context: context,
+        builder: (context) => Container(
+            height: height ?? MediaQuery.of(context).size.height / 3,
+            child: child));
+  }
+
+    //Used for the Cupertino Time Picker
+    Widget timePicker() {
+    return CupertinoTimerPicker(
+      mode: CupertinoTimerPickerMode.hm,
+      minuteInterval: 15,
+      initialTimerDuration: initialtimer,
+      onTimerDurationChanged: (Duration changedtimer) {
+        setState(() {
+          initialtimer = changedtimer;
+          time = changedtimer.inHours.toString() +
+              ' hrs ' +
+              (changedtimer.inMinutes).toString() +
+              ' mins ';
+              durationTextController.text = changedtimer.toString().substring(0,5).trimRight();
+        });
+      },
+    );
+  }
+
   // Default values for kilometer and duration
   double _kilometerValue = 1.0;
   double _durationValue = 1.0;
+  String time;
+  String dateTime;
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -140,7 +193,7 @@ class _AddTripState extends State<AddTrip> {
             // Creating a TextFormField that uses the number keyboard for ease of access.
             TextFormField(
                 decoration: const InputDecoration(
-                  hintText: 'How long is the trip? (in minutes?)',
+                  hintText: 'How long is the trip? (in hours)',
                 ),
                 controller: durationTextController,
                 keyboardType: TextInputType.number,
@@ -162,7 +215,7 @@ class _AddTripState extends State<AddTrip> {
                 });
               },
             ),
-            SliderTheme(
+            /* SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: Colors.green[700],
                 inactiveTrackColor: Colors.transparent,
@@ -186,7 +239,15 @@ class _AddTripState extends State<AddTrip> {
                   durationTextController.text = _durationValue.toString();
                 },
               ),
-            ),
+            ), */
+              dateTime == null ? Container() : Text('$dateTime'),
+              button(
+                "Cupertino Timer Picker",
+                color: Colors.greenAccent[400],
+                onPressed: () {
+                  bottomSheet(context, timePicker());
+                },
+              ),
             // Creating a TextFormField that uses the number keyboard for ease of access.
             TextFormField(
                 decoration: const InputDecoration(
