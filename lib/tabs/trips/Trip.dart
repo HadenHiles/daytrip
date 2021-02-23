@@ -244,10 +244,8 @@ class _AddTripState extends State<AddTrip> {
                       readOnly: true,
                       keyboardType: TextInputType.number,
                       validator: (String value) {
-                        double minutes = double.tryParse(value);
-
-                        if (minutes == null) {
-                          return 'Correct trip duration is needed';
+                        if (value == null) {
+                          return 'A trip duration is needed';
                         }
                         return null;
                       },
