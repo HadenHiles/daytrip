@@ -58,7 +58,7 @@ class _NavigationState extends State<Navigation> {
             ),
             onPressed: () {
               navigatorKey.currentState.push(MaterialPageRoute(builder: (BuildContext context) {
-                return Trip();
+                return AddTrip();
               }));
             },
           ),
