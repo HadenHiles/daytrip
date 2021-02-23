@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daytrip/main.dart';
+import 'package:daytrip/services/utility.dart';
 import 'package:daytrip/widgets/BasicTitle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class _AddTripState extends State<AddTrip> {
   final TextEditingController titleTextFieldController = TextEditingController();
   final TextEditingController descriptionTextFieldController = TextEditingController();
   final TextEditingController kilometersTextController = TextEditingController();
-  final TextEditingController durationTextController = TextEditingController();
+  final TextEditingController _durationTextController = TextEditingController();
 
   // Used for image picker
   File _image;
@@ -43,7 +44,7 @@ class _AddTripState extends State<AddTrip> {
   }
 
   //Used for the Cupterino Timer Picker
-  Duration initialtimer = new Duration();
+  Duration _initialtimer = new Duration();
   Future<void> bottomSheet(BuildContext context, Widget child, {double height}) {
     return showModalBottomSheet(
         isScrollControlled: false,
@@ -58,12 +59,12 @@ class _AddTripState extends State<AddTrip> {
     return CupertinoTimerPicker(
       mode: CupertinoTimerPickerMode.hm,
       minuteInterval: 15,
-      initialTimerDuration: initialtimer,
+      initialTimerDuration: _initialtimer,
       onTimerDurationChanged: (Duration changedtimer) {
         setState(() {
-          initialtimer = changedtimer;
-          time = changedtimer.inHours.toString() + ' hrs ' + (changedtimer.inMinutes).toString() + ' mins ';
-          durationTextController.text = changedtimer.toString().substring(0, 5).trimRight();
+          _initialtimer = changedtimer;
+          _duration = changedtimer;
+          _durationTextController.text = printDuration(changedtimer, false);
         });
       },
     );
@@ -71,7 +72,7 @@ class _AddTripState extends State<AddTrip> {
 
   // Default values for kilometer and duration
   double _kilometerValue = 1.0;
-  String time;
+  Duration _duration;
   String dateTime;
 
   Future getImage() async {
@@ -131,7 +132,7 @@ class _AddTripState extends State<AddTrip> {
                   margin: EdgeInsets.only(top: 10),
                   child: IconButton(
                     icon: Icon(
-                      Icons.save,
+                      Icons.check,
                       size: 28,
                     ),
                     onPressed: () {
@@ -144,7 +145,7 @@ class _AddTripState extends State<AddTrip> {
                           titleTextFieldController.text.toString(),
                           DateTime.now(),
                           descriptionTextFieldController.text.toString(),
-                          Duration(hours: 3).inSeconds,
+                          _duration.inSeconds,
                           double.tryParse(kilometersTextController.text).toInt(),
                         );
 
@@ -162,161 +163,160 @@ class _AddTripState extends State<AddTrip> {
           ];
         },
         body: Container(
+          padding: EdgeInsets.all(20),
           child: Form(
             key: _formKey,
             child: Column(
               children: <Widget>[
+                // Image picker button to choose images
+                Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  child: FloatingActionButton(
+                    onPressed: getImage,
+                    tooltip: 'Pick trip images here!',
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: Icon(
+                      Icons.add_a_photo,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 _image == null ? Text('No image selected') : Image.file(_image),
 
                 // Trip Title TextField
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter a trip title',
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Enter a trip title',
+                    ),
+                    controller: titleTextFieldController,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter a trip title';
+                      }
+                      return null;
+                    },
                   ),
-                  controller: titleTextFieldController,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter a trip title';
-                    }
-                    return null;
-                  },
                 ),
                 // Description TextField
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter a trip description',
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Enter a trip description',
+                    ),
+                    controller: descriptionTextFieldController,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter trip description';
+                      }
+                      return null;
+                    },
                   ),
-                  controller: descriptionTextFieldController,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter trip description';
-                    }
-                    return null;
-                  },
                 ),
                 // Address TextField
                 // I'm not sure how else we are storing the location, geolocation would be cool
                 // but will we complete that near the end, and just store it as an address for now? -TL
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Please enter an address',
-                  ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Valid address is needed';
-                    }
-                    return null;
-                  },
-                ),
-                // Creating a TextFormField that uses the number keyboard for ease of access.
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'How long is the trip? (in hours)',
-                  ),
-                  controller: durationTextController,
-                  keyboardType: TextInputType.number,
-                  validator: (String value) {
-                    double minutes = double.tryParse(value);
-
-                    if (minutes == null) {
-                      return 'Correct trip duration is needed';
-                    }
-                    return null;
-                  },
-                  onChanged: (String value) {
-                    double minutes = double.tryParse(value);
-                    setState(() {
-                      if (minutes != null) {}
-                    });
-                  },
-                ),
-                /* SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: Colors.green[700],
-                inactiveTrackColor: Colors.transparent,
-                trackShape: RectangularSliderTrackShape(),
-                trackHeight: 4.0,
-                thumbColor: Colors.lightGreenAccent,
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                overlayColor: Colors.lightGreen.withAlpha(32),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-            ),
-              child: Slider.adaptive(
-                min: 0,
-                max: 100,
-                divisions: 100,
-                label: '$_durationValue',
-                value: _durationValue,
-                onChanged: (value){
-                  setState(() {
-                    _durationValue = value.roundToDouble(); 
-                  });
-                  durationTextController.text = _durationValue.toString();
-                },
-              ),
-            ), */
-                dateTime == null ? Container() : Text('$dateTime'),
-                button(
-                  "Cupertino Timer Picker",
-                  color: Colors.greenAccent[400],
-                  onPressed: () {
-                    bottomSheet(context, timePicker());
-                  },
-                ),
-                // Creating a TextFormField that uses the number keyboard for ease of access.
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'How far is the trip? (in kilometers)',
-                  ),
-                  controller: kilometersTextController,
-                  keyboardType: TextInputType.number,
-                  validator: (String value) {
-                    double kilometers = double.tryParse(value);
-
-                    if (kilometers == null) {
-                      return 'Correct trip length is needed';
-                    }
-                    return null;
-                  },
-                  onChanged: (String value) {
-                    double kilometers = double.tryParse(value);
-                    setState(() {
-                      if (kilometers != null) {
-                        _kilometerValue = kilometers;
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Please enter an address',
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Valid address is needed';
                       }
-                    });
-                  },
-                ),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: Colors.green[700],
-                    inactiveTrackColor: Colors.transparent,
-                    trackShape: RectangularSliderTrackShape(),
-                    trackHeight: 4.0,
-                    thumbColor: Colors.lightGreenAccent,
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                    overlayColor: Colors.lightGreen.withAlpha(32),
-                    overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-                  ),
-                  child: Slider(
-                    min: 0,
-                    max: 100,
-                    divisions: 100,
-                    label: '$_kilometerValue',
-                    value: _kilometerValue,
-                    onChanged: (value) {
-                      setState(() {
-                        _kilometerValue = value.roundToDouble();
-                      });
-                      kilometersTextController.text = _kilometerValue.toString();
+                      return null;
                     },
                   ),
                 ),
-                // Image picker button to choose images
-                FloatingActionButton(
-                  onPressed: getImage,
-                  tooltip: 'Pick trip images here!',
-                  child: Icon(Icons.add_a_photo),
+                // Creating a TextFormField that uses the number keyboard for ease of access.
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'How long is the trip? (in hours)',
+                    ),
+                    controller: _durationTextController,
+                    readOnly: true,
+                    keyboardType: TextInputType.number,
+                    validator: (String value) {
+                      double minutes = double.tryParse(value);
+
+                      if (minutes == null) {
+                        return 'Correct trip duration is needed';
+                      }
+                      return null;
+                    },
+                    onTap: () {
+                      bottomSheet(context, timePicker());
+                    },
+                    onChanged: (String value) {
+                      double minutes = double.tryParse(value);
+                      setState(() {
+                        if (minutes != null) {}
+                      });
+                    },
+                  ),
+                ),
+                dateTime == null ? Container() : Text('$dateTime'),
+                // Creating a TextFormField that uses the number keyboard for ease of access.
+                Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'How far is the trip? (in kilometers)',
+                    ),
+                    readOnly: true,
+                    controller: kilometersTextController,
+                    keyboardType: TextInputType.number,
+                    validator: (String value) {
+                      double kilometers = double.tryParse(value);
+
+                      if (kilometers == null) {
+                        return 'Correct trip length is needed';
+                      }
+                      return null;
+                    },
+                    onChanged: (String value) {
+                      double kilometers = double.tryParse(value);
+                      setState(() {
+                        if (kilometers != null) {
+                          _kilometerValue = kilometers;
+                        }
+                      });
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 10),
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: Theme.of(context).primaryColor,
+                      inactiveTrackColor: Theme.of(context).colorScheme.primaryVariant,
+                      trackShape: RectangularSliderTrackShape(),
+                      trackHeight: 4.0,
+                      thumbColor: Theme.of(context).colorScheme.secondary,
+                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                      overlayColor: Theme.of(context).primaryColor.withAlpha(32),
+                      overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+                    ),
+                    child: Slider(
+                      min: 0,
+                      max: 100,
+                      divisions: 100,
+                      label: '$_kilometerValue',
+                      value: _kilometerValue,
+                      onChanged: (value) {
+                        setState(() {
+                          _kilometerValue = value.roundToDouble();
+                        });
+                        kilometersTextController.text = _kilometerValue.toString();
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
