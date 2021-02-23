@@ -71,7 +71,6 @@ class _AddTripState extends State<AddTrip> {
 
   // Default values for kilometer and duration
   double _kilometerValue = 1.0;
-  double _durationValue = 1.0;
   String time;
   String dateTime;
 
@@ -227,9 +226,7 @@ class _AddTripState extends State<AddTrip> {
                   onChanged: (String value) {
                     double minutes = double.tryParse(value);
                     setState(() {
-                      if (minutes != null) {
-                        _durationValue = minutes;
-                      }
+                      if (minutes != null) {}
                     });
                   },
                 ),
