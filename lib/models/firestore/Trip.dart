@@ -20,7 +20,7 @@ class Trip {
         assert(map['trip_distance'] != null),
         id = map['id'],
         title = map['title'],
-        date = map['date'],
+        date = map['date'].toDate(),
         description = map['description'],
         tripDuration = map['trip_duration'],
         tripDistance = map['trip_distance'];
