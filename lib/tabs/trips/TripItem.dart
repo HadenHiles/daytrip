@@ -17,24 +17,38 @@ class _TripItemState extends State<TripItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      //Once we can store our pictures in Firebase, we can uncomment
-      //and then our trips will start with the picture
-      /*leading: Image.network(
-                        trip.
-                        height: 50,
-                        width: 75,
-                      ),*/
-      title: Text(widget.trip.title),
-      subtitle: Column(children: [
-        Container(
-          child: Text(widget.trip.date.toString()),
-        ),
-        Container(
-          child: Text(widget.trip.description),
-        ),
-        //Text(widget.trips.)
-      ]),
-      trailing: Text(widget.trip.tripDistance.toString()),
+      leading: Image.network(
+        widget.trip.imageURL,
+        height: 50,
+        width: 75,
+      ),
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(widget.trip.title),
+          Text(widget.trip.tripDistance.toString()),
+        ],
+      ),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            child: Text(widget.trip.date.toString()),
+          ),
+          Container(
+            child: Text(widget.trip.description),
+          ),
+          //Text(widget.trips.)
+        ],
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.edit),
+        onPressed: () {
+          print("Edit bish");
+        },
+      ),
     );
   }
 }
