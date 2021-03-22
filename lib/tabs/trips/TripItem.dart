@@ -1,4 +1,6 @@
 import 'package:daytrip/models/firestore/Trip.dart';
+import 'package:daytrip/services/utility.dart';
+import 'package:daytrip/tabs/trips/Trip.dart';
 import 'package:flutter/material.dart';
 import 'package:daytrip/tabs/Trips.dart';
 
@@ -27,7 +29,7 @@ class _TripItemState extends State<TripItem> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(widget.trip.title),
-          Text(widget.trip.tripDistance.toString()),
+          Text(widget.trip.tripDistance.toString() + " km"),
         ],
       ),
       subtitle: Column(
@@ -35,7 +37,7 @@ class _TripItemState extends State<TripItem> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            child: Text(widget.trip.date.toString()),
+            child: Text(printDuration(Duration(seconds: widget.trip.tripDuration), false)),
           ),
           Container(
             child: Text(widget.trip.description),
@@ -46,7 +48,11 @@ class _TripItemState extends State<TripItem> {
       trailing: IconButton(
         icon: Icon(Icons.edit),
         onPressed: () {
-          print("Edit bish");
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return TripDetail(
+              trip: widget.trip,
+            );
+          }));
         },
       ),
     );
