@@ -23,12 +23,9 @@ class _AddTripState extends State<AddTrip> {
   final user = FirebaseAuth.instance.currentUser;
 
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController titleTextFieldController =
-      TextEditingController();
-  final TextEditingController descriptionTextFieldController =
-      TextEditingController();
-  final TextEditingController kilometersTextController =
-      TextEditingController();
+  final TextEditingController titleTextFieldController = TextEditingController();
+  final TextEditingController descriptionTextFieldController = TextEditingController();
+  final TextEditingController kilometersTextController = TextEditingController();
   final TextEditingController _durationTextController = TextEditingController();
 
   // Used for image picker
@@ -48,25 +45,22 @@ class _AddTripState extends State<AddTrip> {
           onPressed: onPressed),
     );
   }
- String _imageURL;
- Future getImage() async {
-  
+
+  String _imageURL;
+  Future getImage() async {
     final _storage = FirebaseStorage.instance;
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    
+
     setState(() async {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
         String fileName = basename(_image.path);
-        var snapshot = await _storage.ref()
-        .child('tripImages/$fileName')
-        .putFile(_image)
-        .onComplete;
+        var snapshot = await _storage.ref().child('tripImages/$fileName').putFile(_image).onComplete;
 
         var downloadURL = await snapshot.ref.getDownloadURL();
 
         setState(() {
-            _imageURL = downloadURL;
+          _imageURL = downloadURL;
         });
       } else {
         print('No image selected.');
@@ -81,18 +75,8 @@ class _AddTripState extends State<AddTrip> {
 
   //Used for the Cupterino Timer Picker
   Duration _initialtimer = new Duration();
-  Future<void> bottomSheet(BuildContext context, Widget child,
-      {double height}) {
-    return showModalBottomSheet(
-        isScrollControlled: false,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(13), topRight: Radius.circular(13))),
-        backgroundColor: Colors.white,
-        context: context,
-        builder: (context) => Container(
-            height: height ?? MediaQuery.of(context).size.height / 3,
-            child: child));
+  Future<void> bottomSheet(BuildContext context, Widget child, {double height}) {
+    return showModalBottomSheet(isScrollControlled: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(13), topRight: Radius.circular(13))), backgroundColor: Colors.white, context: context, builder: (context) => Container(height: height ?? MediaQuery.of(context).size.height / 3, child: child));
   }
 
   //Used for the Cupertino Time Picker
@@ -171,20 +155,14 @@ class _AddTripState extends State<AddTrip> {
                           DateTime.now(),
                           descriptionTextFieldController.text.toString(),
                           _duration.inSeconds,
-                          double.tryParse(kilometersTextController.text)
-                              .toInt(),
+                          double.tryParse(kilometersTextController.text).toInt(),
                         );
 
-                        FirebaseFirestore.instance
-                            .collection('trips')
-                            .doc(user.uid)
-                            .collection('trips')
-                            .add(trip.toMap())
-                            .then((value) {
+                        FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').add(trip.toMap()).then((value) {
                           navigatorKey.currentState.pop();
                         }).catchError((error) {
                           new SnackBar(content: new Text('Trip failed to save!'));
-                        }); 
+                        });
                       }
                     },
                   ),
@@ -213,9 +191,7 @@ class _AddTripState extends State<AddTrip> {
                       ),
                     ),
                   ),
-                  _image == null
-                      ? Text('No image selected')
-                      : Image.file(_image),
+                  _image == null ? Text('No image selected') : Image.file(_image),
 
                   // Trip Title TextField
                   Padding(
@@ -327,17 +303,13 @@ class _AddTripState extends State<AddTrip> {
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: Theme.of(context).primaryColor,
-                        inactiveTrackColor:
-                            Theme.of(context).colorScheme.primaryVariant,
+                        inactiveTrackColor: Theme.of(context).colorScheme.primaryVariant,
                         trackShape: RectangularSliderTrackShape(),
                         trackHeight: 4.0,
                         thumbColor: Theme.of(context).colorScheme.secondary,
-                        thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                        overlayColor:
-                            Theme.of(context).primaryColor.withAlpha(32),
-                        overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 28.0),
+                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                        overlayColor: Theme.of(context).primaryColor.withAlpha(32),
+                        overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
                       ),
                       child: Slider(
                         min: 0,
@@ -349,8 +321,7 @@ class _AddTripState extends State<AddTrip> {
                           setState(() {
                             _kilometerValue = value.roundToDouble();
                           });
-                          kilometersTextController.text =
-                              _kilometerValue.toString();
+                          kilometersTextController.text = _kilometerValue.toString();
                         },
                       ),
                     ),
