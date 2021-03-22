@@ -41,14 +41,9 @@ class _TripsState extends State<Trips> {
           ),
           StreamBuilder<QuerySnapshot>(
             // ignore: deprecated_member_use
-            stream: FirebaseFirestore.instance
-                .collection('trips')
-                .doc(user.uid)
-                .collection('trips')
-                .snapshots(),
+            stream: FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Text('Loading data... Please Wait...');
+              if (!snapshot.hasData) return Text('Loading data... Please Wait...');
               List<TripItem> trips = [];
               snapshot.data.docs.forEach((doc) {
                 trips.add(
