@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daytrip/main.dart';
 import 'package:daytrip/services/utility.dart';
+import 'package:daytrip/widgets/BasicTextField.dart';
 import 'package:daytrip/widgets/BasicTitle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:daytrip/models/firestore/Trip.dart';
 import 'package:flutter/cupertino.dart';
+//import 'package:intl/intl.dart';
 
 class AddTrip extends StatefulWidget {
   AddTrip({Key key}) : super(key: key);
@@ -20,9 +22,12 @@ class _AddTripState extends State<AddTrip> {
   final user = FirebaseAuth.instance.currentUser;
 
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController titleTextFieldController = TextEditingController();
-  final TextEditingController descriptionTextFieldController = TextEditingController();
-  final TextEditingController kilometersTextController = TextEditingController();
+  final TextEditingController titleTextFieldController =
+      TextEditingController();
+  final TextEditingController descriptionTextFieldController =
+      TextEditingController();
+  final TextEditingController kilometersTextController =
+      TextEditingController();
   final TextEditingController _durationTextController = TextEditingController();
 
   // Used for image picker
@@ -45,13 +50,18 @@ class _AddTripState extends State<AddTrip> {
 
   //Used for the Cupterino Timer Picker
   Duration _initialtimer = new Duration();
-  Future<void> bottomSheet(BuildContext context, Widget child, {double height}) {
+  Future<void> bottomSheet(BuildContext context, Widget child,
+      {double height}) {
     return showModalBottomSheet(
         isScrollControlled: false,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(13), topRight: Radius.circular(13))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(13), topRight: Radius.circular(13))),
         backgroundColor: Colors.white,
         context: context,
-        builder: (context) => Container(height: height ?? MediaQuery.of(context).size.height / 3, child: child));
+        builder: (context) => Container(
+            height: height ?? MediaQuery.of(context).size.height / 3,
+            child: child));
   }
 
   //Used for the Cupertino Time Picker
@@ -146,13 +156,20 @@ class _AddTripState extends State<AddTrip> {
                           DateTime.now(),
                           descriptionTextFieldController.text.toString(),
                           _duration.inSeconds,
-                          double.tryParse(kilometersTextController.text).toInt(),
+                          double.tryParse(kilometersTextController.text)
+                              .toInt(),
                         );
 
-                        FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').add(trip.toMap()).then((value) {
+                        FirebaseFirestore.instance
+                            .collection('trips')
+                            .doc(user.uid)
+                            .collection('trips')
+                            .add(trip.toMap())
+                            .then((value) {
                           navigatorKey.currentState.pop();
                         }).catchError((error) {
-                          new SnackBar(content: new Text('Trip failed to save!'));
+                          new SnackBar(
+                              content: new Text('Trip failed to save!'));
                         });
                       }
                     },
@@ -182,15 +199,15 @@ class _AddTripState extends State<AddTrip> {
                       ),
                     ),
                   ),
-                  _image == null ? Text('No image selected') : Image.file(_image),
+                  _image == null
+                      ? Text('No image selected')
+                      : Image.file(_image),
 
                   // Trip Title TextField
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Enter a trip title',
-                      ),
+                    child: BasicTextField(
+                      hintText: 'Enter a trip title',
                       controller: titleTextFieldController,
                       validator: (value) {
                         if (value.isEmpty) {
@@ -203,10 +220,8 @@ class _AddTripState extends State<AddTrip> {
                   // Description TextField
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Enter a trip description',
-                      ),
+                    child: BasicTextField(
+                      hintText: 'Enter a trip description',
                       controller: descriptionTextFieldController,
                       validator: (value) {
                         if (value.isEmpty) {
@@ -221,10 +236,8 @@ class _AddTripState extends State<AddTrip> {
                   // but will we complete that near the end, and just store it as an address for now? -TL
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Please enter an address',
-                      ),
+                    child: BasicTextField(
+                      hintText: 'Please enter an address',
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Valid address is needed';
@@ -237,7 +250,10 @@ class _AddTripState extends State<AddTrip> {
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: TextFormField(
-                      decoration: const InputDecoration(
+                      cursorColor: Theme.of(context).textTheme.bodyText1.color,
+                      style: Theme.of(context).textTheme.bodyText1,
+                      decoration: InputDecoration(
+                        hintStyle: Theme.of(context).textTheme.bodyText1,
                         hintText: 'How long is the trip? (in hours)',
                       ),
                       controller: _durationTextController,
@@ -265,7 +281,10 @@ class _AddTripState extends State<AddTrip> {
                   Padding(
                     padding: EdgeInsets.only(top: 10),
                     child: TextFormField(
-                      decoration: const InputDecoration(
+                      cursorColor: Theme.of(context).textTheme.bodyText1.color,
+                      style: Theme.of(context).textTheme.bodyText1,
+                      decoration: InputDecoration(
+                        hintStyle: Theme.of(context).textTheme.bodyText1,
                         hintText: 'How far is the trip? (in kilometers)',
                       ),
                       readOnly: true,
@@ -294,13 +313,17 @@ class _AddTripState extends State<AddTrip> {
                     child: SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: Theme.of(context).primaryColor,
-                        inactiveTrackColor: Theme.of(context).colorScheme.primaryVariant,
+                        inactiveTrackColor:
+                            Theme.of(context).colorScheme.primaryVariant,
                         trackShape: RectangularSliderTrackShape(),
                         trackHeight: 4.0,
                         thumbColor: Theme.of(context).colorScheme.secondary,
-                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                        overlayColor: Theme.of(context).primaryColor.withAlpha(32),
-                        overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
+                        thumbShape:
+                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                        overlayColor:
+                            Theme.of(context).primaryColor.withAlpha(32),
+                        overlayShape:
+                            RoundSliderOverlayShape(overlayRadius: 28.0),
                       ),
                       child: Slider(
                         min: 0,
@@ -312,7 +335,8 @@ class _AddTripState extends State<AddTrip> {
                           setState(() {
                             _kilometerValue = value.roundToDouble();
                           });
-                          kilometersTextController.text = _kilometerValue.toString();
+                          kilometersTextController.text =
+                              _kilometerValue.toString();
                         },
                       ),
                     ),
