@@ -32,15 +32,26 @@ class _TripsState extends State<Trips> {
                   //Once we can store our pictures in Firebase, we can uncomment
                   //and then our trips will start with the picture
                   leading: Image.network(
-                    trip['img'],
+                    trip['imageURL'],
                     height: 50,
                     width: 75,
                   ),
                   title: Text(trip['title']),
                   subtitle: Text(trip['description'].toString()),
-                  trailing: Text(trip['trip_distance'].toString()),
-                );
-              });
+                  trailing: GestureDetector(
+                      child: IconButton(
+                        icon: Icon(
+                        Icons.edit_sharp,
+                        size: 28,
+                      ),
+                    onPressed: (){
+                      print("You pressed on a trip");
+
+                     },
+                    ),
+                  ),  
+              );
+          });
         },
       ),
     );

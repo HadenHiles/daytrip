@@ -7,18 +7,21 @@ class Trip {
   final String description;
   final int tripDuration;
   final int tripDistance;
+  final String imageURL;
   DocumentReference reference;
 
-  Trip(this.title, this.date, this.description, this.tripDuration,
+  Trip(this.imageURL, this.title, this.date, this.description, this.tripDuration,
       this.tripDistance);
 
   Trip.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['title'] != null),
+      : assert(map['imageURL'] != null),
+        assert(map['title'] != null),
         assert(map['date'] != null),
         assert(map['description'] != null),
         assert(map['trip_duration'] != null),
         assert(map['trip_distance'] != null),
         id = map['id'],
+        imageURL = map['imageURL'],
         title = map['title'],
         date = map['date'],
         description = map['description'],
@@ -28,6 +31,7 @@ class Trip {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'imageURL': imageURL,
       'title': title,
       'date': date,
       'description': description,

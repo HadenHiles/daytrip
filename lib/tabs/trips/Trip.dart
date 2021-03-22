@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:daytrip/models/firestore/Trip.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
 
 class AddTrip extends StatefulWidget {
   AddTrip({Key key}) : super(key: key);
@@ -42,6 +44,36 @@ class _AddTripState extends State<AddTrip> {
           onPressed: onPressed),
     );
   }
+ String _imageURL;
+ Future getImage() async {
+  
+    final _storage = FirebaseStorage.instance;
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    
+    setState(() async {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        String fileName = basename(_image.path);
+        var snapshot = await _storage.ref()
+        .child('tripImages/$fileName')
+        .putFile(_image)
+        .onComplete;
+
+        var downloadURL = await snapshot.ref.getDownloadURL();
+
+        setState(() {
+            _imageURL = downloadURL;
+        });
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  // Default values for kilometer and duration
+  double _kilometerValue = 1.0;
+  Duration _duration;
+  String dateTime;
 
   //Used for the Cupterino Timer Picker
   Duration _initialtimer = new Duration();
@@ -68,23 +100,6 @@ class _AddTripState extends State<AddTrip> {
         });
       },
     );
-  }
-
-  // Default values for kilometer and duration
-  double _kilometerValue = 1.0;
-  Duration _duration;
-  String dateTime;
-
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
   }
 
   @override
@@ -142,6 +157,7 @@ class _AddTripState extends State<AddTrip> {
                         // Process data.
                         // Create trip object
                         Trip trip = Trip(
+                          _imageURL,
                           titleTextFieldController.text.toString(),
                           DateTime.now(),
                           descriptionTextFieldController.text.toString(),
@@ -153,7 +169,7 @@ class _AddTripState extends State<AddTrip> {
                           navigatorKey.currentState.pop();
                         }).catchError((error) {
                           new SnackBar(content: new Text('Trip failed to save!'));
-                        });
+                        }); 
                       }
                     },
                   ),
