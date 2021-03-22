@@ -12,24 +12,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
-class AddTrip extends StatefulWidget {
-  AddTrip({Key key}) : super(key: key);
+class TripDetail extends StatefulWidget {
+  TripDetail({Key key, this.trip}) : super(key: key);
+
+  final Trip trip;
 
   @override
-  _AddTripState createState() => _AddTripState();
+  _TripDetailState createState() => _TripDetailState();
 }
 
-class _AddTripState extends State<AddTrip> {
+class _TripDetailState extends State<TripDetail> {
   final user = FirebaseAuth.instance.currentUser;
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController titleTextFieldController = TextEditingController();
   final TextEditingController descriptionTextFieldController = TextEditingController();
+  final TextEditingController addressTextFieldController = TextEditingController();
   final TextEditingController kilometersTextController = TextEditingController();
-  final TextEditingController _durationTextController = TextEditingController();
+  final TextEditingController durationTextController = TextEditingController();
 
   // Used for image picker
-  File _image;
+  File _imageFile;
   final picker = ImagePicker();
   Widget button(String text, {Function onPressed, Color color}) {
     return Container(
@@ -53,9 +56,9 @@ class _AddTripState extends State<AddTrip> {
 
     setState(() async {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        String fileName = basename(_image.path);
-        var snapshot = await _storage.ref().child('tripImages/$fileName').putFile(_image).onComplete;
+        _imageFile = File(pickedFile.path);
+        String fileName = basename(_imageFile.path);
+        var snapshot = await _storage.ref().child('tripImages/$fileName').putFile(_imageFile).onComplete;
 
         var downloadURL = await snapshot.ref.getDownloadURL();
 
@@ -89,10 +92,26 @@ class _AddTripState extends State<AddTrip> {
         setState(() {
           _initialtimer = changedtimer;
           _duration = changedtimer;
-          _durationTextController.text = printDuration(changedtimer, false);
+          durationTextController.text = printDuration(changedtimer, false);
         });
       },
     );
+  }
+
+  @override
+  void initState() {
+    if (widget.trip != null) {
+      _imageURL = widget.trip.imageURL;
+      titleTextFieldController.text = widget.trip.title;
+      descriptionTextFieldController.text = widget.trip.description;
+      addressTextFieldController.text = widget.trip.address;
+      _duration = Duration(seconds: widget.trip.tripDuration);
+      durationTextController.text = printDuration(Duration(seconds: widget.trip.tripDuration), false);
+      kilometersTextController.text = widget.trip.tripDistance.toString();
+      _kilometerValue = widget.trip.tripDistance.toDouble();
+    }
+
+    super.initState();
   }
 
   @override
@@ -154,15 +173,24 @@ class _AddTripState extends State<AddTrip> {
                           titleTextFieldController.text.toString(),
                           DateTime.now(),
                           descriptionTextFieldController.text.toString(),
+                          addressTextFieldController.text,
                           _duration.inSeconds,
                           double.tryParse(kilometersTextController.text).toInt(),
                         );
 
-                        FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').add(trip.toMap()).then((value) {
-                          navigatorKey.currentState.pop();
-                        }).catchError((error) {
-                          new SnackBar(content: new Text('Trip failed to save!'));
-                        });
+                        if (widget.trip == null) {
+                          FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').add(trip.toMap()).then((value) {
+                            navigatorKey.currentState.pop();
+                          }).catchError((error) {
+                            new SnackBar(content: new Text('Trip failed to save!'));
+                          });
+                        } else {
+                          FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').doc(widget.trip.reference.id).update(trip.toMap()).then((value) {
+                            navigatorKey.currentState.pop();
+                          }).catchError((error) {
+                            new SnackBar(content: new Text('Trip failed to save!'));
+                          });
+                        }
                       }
                     },
                   ),
@@ -191,7 +219,7 @@ class _AddTripState extends State<AddTrip> {
                       ),
                     ),
                   ),
-                  _image == null ? Text('No image selected') : Image.file(_image),
+                  _imageURL == null ? Text('No image selected') : Image.network(_imageURL),
 
                   // Trip Title TextField
                   Padding(
@@ -228,6 +256,7 @@ class _AddTripState extends State<AddTrip> {
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: BasicTextField(
                       hintText: 'Please enter an address',
+                      controller: addressTextFieldController,
                       validator: (value) {
                         if (value.isEmpty) {
                           return 'Valid address is needed';
@@ -246,7 +275,7 @@ class _AddTripState extends State<AddTrip> {
                         hintStyle: Theme.of(context).textTheme.bodyText1,
                         hintText: 'How long is the trip? (in hours)',
                       ),
-                      controller: _durationTextController,
+                      controller: durationTextController,
                       readOnly: true,
                       keyboardType: TextInputType.number,
                       validator: (String value) {
