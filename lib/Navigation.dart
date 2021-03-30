@@ -81,7 +81,7 @@ class _NavigationState extends State<Navigation> {
     _loadPreferences();
 
     setState(() {
-      _title = BasicTitle(title: "Profile");
+      _title = BasicTitle(title: "Trips");
       _actions = [];
     });
 
