@@ -67,7 +67,7 @@ class _TripsState extends State<Trips> {
             });
 
             List<TripItem> tripItems = trips.where((t) {
-              return (t.trip.title.contains(_searchTerm) || t.trip.description.contains(_searchTerm) || t.trip.address.contains(_searchTerm));
+              return (t.trip.title.toLowerCase().contains(_searchTerm.toLowerCase()) || t.trip.description.toLowerCase().contains(_searchTerm.toLowerCase()) || t.trip.address.toLowerCase().contains(_searchTerm.toLowerCase()));
             }).toList();
 
             return Expanded(
