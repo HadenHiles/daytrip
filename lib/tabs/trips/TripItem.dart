@@ -126,7 +126,16 @@ class _TripItemState extends State<TripItem> {
             child: Text(printDuration(Duration(seconds: widget.trip.tripDuration), false)),
           ),
           Container(
-            child: Text(widget.trip.description),
+            width: 200,
+            child: AutoSizeText(
+              widget.trip.description,
+              style: TextStyle(
+                fontSize: 12,
+              ),
+              minFontSize: 10,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           //Text(widget.trips.)
         ],
