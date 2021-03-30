@@ -18,6 +18,7 @@ class Trips extends StatefulWidget {
 class _TripsState extends State<Trips> {
   // Static variables
   final user = FirebaseAuth.instance.currentUser;
+  String _searchTerm = "";
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +37,27 @@ class _TripsState extends State<Trips> {
               prefixIcon: Icon(Icons.search),
             ),
             onChanged: (value) {
-              //  String values = value;
+              setState(() {
+                _searchTerm = value;
+              });
             },
           ),
           StreamBuilder<QuerySnapshot>(
             // ignore: deprecated_member_use
             stream: FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) return Text('Loading data... Please Wait...');
+              if (!snapshot.hasData)
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                );
+
               List<TripItem> trips = [];
               snapshot.data.docs.forEach((doc) {
                 trips.add(
@@ -52,9 +66,12 @@ class _TripsState extends State<Trips> {
                   ),
                 );
               });
+
               return Expanded(
                 child: ListView(
-                  children: trips,
+                  children: trips.where((t) {
+                    return (t.trip.title.contains(_searchTerm) || t.trip.description.contains(_searchTerm) || t.trip.address.contains(_searchTerm));
+                  }).toList(),
                 ),
               );
             },
