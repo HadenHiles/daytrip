@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// Hello my name is dumbass
+
 class Trips extends StatefulWidget {
   Trips({Key key}) : super(key: key);
 
