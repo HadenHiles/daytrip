@@ -103,7 +103,7 @@ class _TripItemState extends State<TripItem> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Container(
-                width: 200,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: AutoSizeText(
                   widget.trip.title,
                   style: TextStyle(
