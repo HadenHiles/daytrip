@@ -22,62 +22,70 @@ class _TripsState extends State<Trips> {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          TextField(
-            cursorColor: Theme.of(context).textTheme.bodyText1.color,
-            style: Theme.of(context).textTheme.bodyText1,
-            decoration: InputDecoration(
-              hintStyle: Theme.of(context).textTheme.bodyText1,
-              border: InputBorder.none,
-              hintText: 'Enter a search term',
-              prefixIcon: Icon(Icons.search),
-            ),
-            onChanged: (value) {
-              setState(() {
-                _searchTerm = value;
-              });
-            },
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        TextField(
+          cursorColor: Theme.of(context).textTheme.bodyText1.color,
+          style: Theme.of(context).textTheme.bodyText1,
+          decoration: InputDecoration(
+            hintStyle: Theme.of(context).textTheme.bodyText1,
+            border: InputBorder.none,
+            hintText: 'Enter a search term',
+            prefixIcon: Icon(Icons.search),
           ),
-          StreamBuilder<QuerySnapshot>(
-            // ignore: deprecated_member_use
-            stream: FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ],
-                );
-
-              List<TripItem> trips = [];
-              snapshot.data.docs.forEach((doc) {
-                trips.add(
-                  TripItem(
-                    trip: Trip.fromSnapshot(doc),
+          onChanged: (value) {
+            setState(() {
+              _searchTerm = value;
+            });
+          },
+        ),
+        StreamBuilder<QuerySnapshot>(
+          // ignore: deprecated_member_use
+          stream: FirebaseFirestore.instance.collection('trips').doc(user.uid).collection('trips').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData)
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Center(
+                    child: CircularProgressIndicator(),
                   ),
-                );
-              });
+                ],
+              );
 
-              return Expanded(
-                child: ListView(
-                  children: trips.where((t) {
-                    return (t.trip.title.contains(_searchTerm) || t.trip.description.contains(_searchTerm) || t.trip.address.contains(_searchTerm));
-                  }).toList(),
+            List<TripItem> trips = [];
+            snapshot.data.docs.forEach((doc) {
+              trips.add(
+                TripItem(
+                  trip: Trip.fromSnapshot(doc),
                 ),
               );
-            },
-          ),
-        ],
-      ),
+            });
+
+            List<TripItem> tripItems = trips.where((t) {
+              return (t.trip.title.contains(_searchTerm) || t.trip.description.contains(_searchTerm) || t.trip.address.contains(_searchTerm));
+            }).toList();
+
+            return Expanded(
+              child: tripItems.length < 1
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("No trips found."),
+                      ],
+                    )
+                  : ListView(
+                      children: tripItems,
+                    ),
+            );
+          },
+        ),
+      ],
     );
 
 /*
