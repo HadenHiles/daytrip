@@ -1,7 +1,5 @@
 # DayTrip Documentation
 
-A new Flutter project.
-
 ## System Requirements
 
 ### Hardware
