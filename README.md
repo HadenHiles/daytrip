@@ -23,7 +23,6 @@
 - Follow respective Android/IOS [setup instructions](https://firebase.google.com/docs/flutter/setup?platform=android) provided by Firebase
 - Generate SHA1 signing report for Android/IOS and add the firebase project via the firebase console (otherwise the connection from your development machine will be rejected by firebase). For further information see these resources: [android](https://medium.com/mindorks/generating-sha-1-for-android-the-simplest-way-a3a9a92c36e7), [IOS](https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/Procedures/Procedures.html).
 
-
-For more help getting started with Flutter, view their
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Credits
+- For more help getting started with Flutter, view their [online documentation](https://flutter.dev/docs), which offers tutorials, samples, guidance on mobile development, and a full API reference. We have used thier documentation extensively throughout this project.
+- For more resources regarding Firebase please see their [extensive documentation](https://firebase.google.com/docs/).
