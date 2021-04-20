@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daytrip/models/firestore/UserProfile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:daytrip/widgets/UserAvatar.dart';
@@ -12,6 +14,20 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   // Static variables
   final user = FirebaseAuth.instance.currentUser;
+  String _displayName;
+
+  @override
+  void initState() {
+    FirebaseFirestore.instance.collection('users').doc(user.uid).get().then((uDoc) {
+      UserProfile userProfile = UserProfile.fromSnapshot(uDoc);
+
+      setState(() {
+        _displayName = userProfile.displayName != null ? userProfile.displayName : user.displayName;
+      });
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +56,33 @@ class _ProfileState extends State<Profile> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    child: Text(
-                      user.displayName != null && user.displayName.isNotEmpty
-                          ? user.displayName
-                          : user.email,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.bodyText1.color,
-                      ),
+                    child: StreamBuilder<DocumentSnapshot>(
+                      // ignore: deprecated_member_use
+                      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ],
+                          );
+
+                        UserProfile userProfile = UserProfile.fromSnapshot(snapshot.data);
+
+                        return Text(
+                          userProfile.displayName != null && userProfile.displayName.isNotEmpty ? userProfile.displayName : user.displayName,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).textTheme.bodyText1.color,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],

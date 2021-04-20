@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daytrip/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -520,6 +521,9 @@ class _LoginState extends State<Login> {
       await FirebaseAuth.instance.signInWithEmailAndPassword(email: authAttempt.email, password: authAttempt.password).then((credential) {
         Navigator.of(context, rootNavigator: true).pop('dialog');
 
+        // Update/add the user's display name to firestore
+        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).set({'display_name': FirebaseAuth.instance.currentUser.displayName}).then((value) => () {});
+
         setState(() {
           _signedIn = true;
         });
@@ -544,6 +548,9 @@ class _LoginState extends State<Login> {
   socialSignIn(BuildContext context, String provider, Function error) async {
     if (provider == 'google') {
       signInWithGoogle().then((googleSignInAccount) {
+        // Update/add the user's display name to firestore
+        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).set({'display_name': FirebaseAuth.instance.currentUser.displayName}).then((value) => () {});
+
         setState(() {
           _signedIn = true;
         });

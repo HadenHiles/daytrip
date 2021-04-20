@@ -9,6 +9,8 @@ import 'package:daytrip/services/auth.dart';
 import 'package:daytrip/theme/SettingsStateNotifier.dart';
 import 'package:daytrip/widgets/BasicTitle.dart';
 
+import 'EditProfile.dart';
+
 class ProfileSettings extends StatefulWidget {
   ProfileSettings({Key key}) : super(key: key);
 
@@ -111,6 +113,24 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               title: 'Account',
               tiles: [
                 SettingsTile(
+                  title: 'Edit Profile',
+                  titleTextStyle: Theme.of(context).textTheme.bodyText1,
+                  subtitleTextStyle: Theme.of(context).textTheme.bodyText2,
+                  leading: Icon(
+                    Icons.person,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  onPressed: (BuildContext context) {
+                    navigatorKey.currentState.push(
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return EditProfile();
+                        },
+                      ),
+                    );
+                  },
+                ),
+                SettingsTile(
                   title: 'Logout',
                   titleTextStyle: TextStyle(
                     color: Colors.red,
@@ -133,7 +153,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                       ),
                     );
                   },
-                )
+                ),
               ],
             ),
           ],
