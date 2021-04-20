@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daytrip/main.dart';
 import 'package:daytrip/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +30,8 @@ class _LoginState extends State<Login> {
   // static variables
   final _signInFormKey = GlobalKey<FormState>();
   final _signUpFormKey = GlobalKey<FormState>();
+  final _forgotPasswordFormKey = GlobalKey<FormState>();
+  final TextEditingController _forgotPasswordEmail = TextEditingController();
   final TextEditingController _signInEmail = TextEditingController();
   final TextEditingController _signInPass = TextEditingController();
   final TextEditingController _signUpEmail = TextEditingController();
@@ -286,7 +289,107 @@ class _LoginState extends State<Login> {
                                                   },
                                                 ),
                                               ),
-                                            )
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: ElevatedButton(
+                                                child: Text("Forgot password?"),
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return SimpleDialog(
+                                                        contentPadding: EdgeInsets.all(25),
+                                                        children: [
+                                                          Column(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: [
+                                                              Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                mainAxisSize: MainAxisSize.max,
+                                                                children: [
+                                                                  Container(
+                                                                    height: 50,
+                                                                    child: Image.asset(
+                                                                      'assets/images/logo/logo.png',
+                                                                      width: 120,
+                                                                    ),
+                                                                  ),
+                                                                  Text(
+                                                                    'Forgot Password',
+                                                                    style: TextStyle(
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.bold,
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              Form(
+                                                                key: _forgotPasswordFormKey,
+                                                                child: Column(
+                                                                  mainAxisSize: MainAxisSize.min,
+                                                                  children: <Widget>[
+                                                                    Padding(
+                                                                      padding: EdgeInsets.all(8.0),
+                                                                      child: TextFormField(
+                                                                        controller: _forgotPasswordEmail,
+                                                                        decoration: InputDecoration(
+                                                                          labelText: 'Email',
+                                                                        ),
+                                                                        keyboardType: TextInputType.emailAddress,
+                                                                        validator: (String value) {
+                                                                          if (value.isEmpty) {
+                                                                            return 'Please enter your email';
+                                                                          } else if (!validEmail(value)) {
+                                                                            return 'Invalid email address';
+                                                                          }
+
+                                                                          return null;
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets.all(8.0),
+                                                                      child: ElevatedButton(
+                                                                        child: Text("Send reset email"),
+                                                                        onPressed: () {
+                                                                          if (_forgotPasswordFormKey.currentState.validate()) {
+                                                                            FirebaseAuth.instance.sendPasswordResetEmail(email: _forgotPasswordEmail.text.toString()).then((value) {
+                                                                              _forgotPasswordEmail.text = "";
+
+                                                                              navigatorKey.currentState.pop();
+                                                                              navigatorKey.currentState.pop();
+
+                                                                              _scaffoldKey.currentState.showSnackBar(
+                                                                                SnackBar(
+                                                                                  content: Text("Reset email link sent to ${_forgotPasswordEmail.text.toString()}"),
+                                                                                  duration: Duration(seconds: 10),
+                                                                                  action: SnackBarAction(
+                                                                                    label: "Dismiss",
+                                                                                    onPressed: () {
+                                                                                      // ignore: deprecated_member_use
+                                                                                      _scaffoldKey.currentState.hideCurrentSnackBar();
+                                                                                    },
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                            });
+                                                                          }
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
