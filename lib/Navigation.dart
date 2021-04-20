@@ -128,7 +128,7 @@ class _NavigationState extends State<Navigation> {
           ];
         },
         body: Container(
-          padding: EdgeInsets.only(bottom: 100),
+          padding: EdgeInsets.only(bottom: 0),
           child: _tabs.elementAt(_selectedIndex),
         ),
       ),

@@ -14,15 +14,14 @@ class Trip {
   Trip(this.imageURL, this.title, this.date, this.description, this.address, this.tripDuration, this.tripDistance);
 
   Trip.fromMap(Map<String, dynamic> map, {this.reference})
-      : assert(map['imageURL'] != null),
-        assert(map['title'] != null),
+      : assert(map['title'] != null),
         assert(map['date'] != null),
         assert(map['description'] != null),
         assert(map['address'] != null),
         assert(map['trip_duration'] != null),
         assert(map['trip_distance'] != null),
         id = map['id'],
-        imageURL = map['imageURL'],
+        imageURL = map['imageURL'] ?? "https://place-hold.it/300x200",
         title = map['title'],
         date = map['date'].toDate(),
         description = map['description'],
