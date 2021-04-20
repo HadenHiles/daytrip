@@ -493,6 +493,9 @@ class _LoginState extends State<Login> {
         password: authAttempt.password,
       )
           .then((credential) {
+        // Update/add the user's display name to firestore
+        FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid).set({'display_name': FirebaseAuth.instance.currentUser.email}).then((value) => () {});
+
         Navigator.of(context, rootNavigator: true).pop('dialog');
 
         setState(() {
